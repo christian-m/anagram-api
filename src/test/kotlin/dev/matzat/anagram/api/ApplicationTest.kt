@@ -61,4 +61,32 @@ internal class ApplicationTest {
                 assertThat(responseBody).isEqualTo("{}")
             }
         }
+
+    @Test
+    fun testSwaggerOpenApiPath() =
+        testApplication {
+            application {
+                module()
+            }
+            val response = client.get("/openapi.json")
+            assertAll {
+                assertThat(response).all {
+                    prop(HttpResponse::status).isEqualTo(HttpStatusCode.OK)
+                }
+            }
+        }
+
+    @Test
+    fun testSwaggerUiPath() =
+        testApplication {
+            application {
+                module()
+            }
+            val response = client.get("/swagger-ui")
+            assertAll {
+                assertThat(response).all {
+                    prop(HttpResponse::status).isEqualTo(HttpStatusCode.OK)
+                }
+            }
+        }
 }
