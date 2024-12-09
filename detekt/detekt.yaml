@@ -1,0 +1,22 @@
+# see https://github.com/detekt/detekt/blob/main/detekt-core/src/main/resources/default-detekt-config.yml
+style:
+  MaxLineLength:
+    maxLineLength: 180
+    excludes: [ '**/test/**' ]
+  UnusedPrivateMember:
+    excludes: [ '**/test/**' ]
+  ForbiddenComment:
+    active: false
+  MagicNumber:
+    active: false
+    ignoreEnums: true
+
+complexity:
+  LongMethod:
+    excludes: [ '**/test/**' ]
+
+naming:
+  ClassNaming:
+    excludes: [ '**/test/**' ]
+  VariableNaming:
+    excludes: [ '**/test/**' ]

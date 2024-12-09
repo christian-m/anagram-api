@@ -1,0 +1,43 @@
+name: CI build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-java
+      - run: ./mvnw ktlint:check
+
+  detekt:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-java
+      - run: ./mvnw detekt:check
+
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-java
+      - run: ./mvnw test
+      - name: publish test report
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: "**/target/surefire-reports/TEST-*.xml"
