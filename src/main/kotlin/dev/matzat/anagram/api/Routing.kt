@@ -1,6 +1,7 @@
 package dev.matzat.anagram.api
 
 import dev.matzat.anagram.api.model.ComparisonResponse
+import dev.matzat.anagram.api.model.HistoryResponse
 import dev.matzat.anagram.service.AnagramService
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.smiley4.ktorswaggerui.dsl.routing.post
@@ -22,6 +23,7 @@ fun Application.configureRouting() =
     routing {
         val service = AnagramService()
         compare(service)
+        history(service)
     }
 
 fun Route.compare(service: AnagramService) =
@@ -68,9 +70,62 @@ fun Route.compare(service: AnagramService) =
                 val formParameters = call.receiveParameters()
                 val text = formParameters["text"].orEmpty()
                 val candidate = formParameters["candidate"].orEmpty()
-                logger.info { "got request: [$text] [$candidate]" }
+                logger.info { "got comparison request: [$text] [$candidate]" }
                 val result = service.compare(text, candidate)
                 call.respond(HttpStatusCode.OK, ComparisonResponse(text, candidate, result))
+            } catch (ex: ContentTransformationException) {
+                call.respond(HttpStatusCode.BadRequest)
+                logger.debug(ex) { "Bad Request" }
+            } catch (ex: BadRequestException) {
+                call.respond(HttpStatusCode.BadRequest)
+                logger.debug(ex) { "Bad Request" }
+            }
+        }
+    }
+
+fun Route.history(service: AnagramService) =
+    route("/history") {
+        post(
+            {
+                description = "Searches the input history to find all anagrams of this text that have been entered until now."
+                request {
+                    body(
+                        Schema<Any>().apply {
+                            types = setOf("object")
+                            properties =
+                                mapOf(
+                                    "text" to
+                                        Schema<String>().apply {
+                                            types = setOf("string")
+                                            description = "a text that should be compared against the history of inputs"
+                                        },
+                                )
+                        },
+                    ) {
+                        mediaTypes(ContentType.Application.FormUrlEncoded)
+                    }
+                }
+
+                response {
+                    HttpStatusCode.OK to {
+                        description = "The history search was successful"
+                        body<HistoryResponse> {
+                            mediaTypes(ContentType.Application.Json)
+                            description = "All found anagrams of this text in history"
+                        }
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Invalid input data was provided"
+                    }
+                }
+            },
+        ) {
+            try {
+                val formParameters = call.receiveParameters()
+                val textToFind = formParameters["text"].orEmpty()
+                logger.info { "got history search request: [$textToFind]" }
+                val result = service.findInHistory(textToFind)
+                call.respond(HttpStatusCode.OK, HistoryResponse(textToFind, result))
             } catch (ex: ContentTransformationException) {
                 call.respond(HttpStatusCode.BadRequest)
                 logger.debug(ex) { "Bad Request" }

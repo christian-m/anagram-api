@@ -3,9 +3,13 @@ package dev.matzat.anagram.api
 import assertk.all
 import assertk.assertAll
 import assertk.assertThat
+import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.hasSize
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
 import dev.matzat.anagram.api.model.ComparisonResponse
+import dev.matzat.anagram.api.model.HistoryResponse
 import dev.matzat.anagram.module
 import dev.matzat.anagram.service.ComparisonResult
 import io.ktor.client.call.body
@@ -110,7 +114,6 @@ internal class ApplicationTest {
         assertAll {
             assertThat(response).all {
                 prop(HttpResponse::status).isEqualTo(HttpStatusCode.OK)
-                // prop(HttpResponse::contentType).isEqualTo(ContentType.Application.Json.toString())
             }
             assertThat(responseBody).all {
                 prop(ComparisonResponse::text).isEqualTo(givenText)
@@ -119,6 +122,68 @@ internal class ApplicationTest {
             }
         }
     }
+
+    @Test
+    fun testHistoryPath() =
+        testApplication {
+            application {
+                module()
+            }
+            val client = createClient { install(ContentNegotiation) { json() } }
+            val givenText = "enlist"
+            val expectedResult = listOf("silent", "listen")
+            client.post("/compare") {
+                header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                setBody(listOf("text" to givenText, "candidate" to expectedResult.first()).formUrlEncode())
+            }
+            client.post("/compare") {
+                header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                setBody(listOf("text" to givenText, "candidate" to expectedResult.last()).formUrlEncode())
+            }
+            val response =
+                client.post("/history") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("text" to givenText).formUrlEncode())
+                }
+            val responseBody = response.body<HistoryResponse>()
+            assertAll {
+                assertThat(response).all {
+                    prop(HttpResponse::status).isEqualTo(HttpStatusCode.OK)
+                }
+                assertThat(responseBody).all {
+                    prop(HistoryResponse::text).isEqualTo(givenText)
+                    prop(HistoryResponse::anagrams).all {
+                        hasSize(2)
+                        containsExactlyInAnyOrder(*expectedResult.toTypedArray())
+                    }
+                }
+            }
+        }
+
+    @Test
+    fun testEmptyHistoryPath() =
+        testApplication {
+            application {
+                module()
+            }
+            val client = createClient { install(ContentNegotiation) { json() } }
+            val givenText = "trouble"
+            val response =
+                client.post("/history") {
+                    header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+                    setBody(listOf("text" to givenText).formUrlEncode())
+                }
+            val responseBody = response.body<HistoryResponse>()
+            assertAll {
+                assertThat(response).all {
+                    prop(HttpResponse::status).isEqualTo(HttpStatusCode.OK)
+                }
+                assertThat(responseBody).all {
+                    prop(HistoryResponse::text).isEqualTo(givenText)
+                    prop(HistoryResponse::anagrams).isEmpty()
+                }
+            }
+        }
 
     companion object {
         @JvmStatic

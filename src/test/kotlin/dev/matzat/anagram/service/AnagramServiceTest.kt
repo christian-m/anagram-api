@@ -1,6 +1,9 @@
 package dev.matzat.anagram.service
 
+import assertk.all
 import assertk.assertThat
+import assertk.assertions.containsExactlyInAnyOrder
+import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
@@ -122,6 +125,24 @@ internal class AnagramServiceTest {
         assertThat(service.compare(text, other)).isEqualTo(ComparisonResult.NO_MATCH)
     }
 
+    @ParameterizedTest(name = "{index}: {0}")
+    @DisplayName("GIVEN some inputs and a text WHEN the text is searched in the historyTHEN matching anagrams are returned")
+    @MethodSource("anagramHistoryTestData")
+    fun testAnagramHistory(
+        @Suppress("unused") desc: String,
+        givenInputs: List<Pair<String, String>>,
+        givenText: String,
+        expectedResult: List<String>,
+    ) {
+        val service = AnagramService()
+        givenInputs.forEach { service.compare(it.first, it.second) }
+
+        assertThat(service.findInHistory(givenText)).all {
+            hasSize(expectedResult.size)
+            containsExactlyInAnyOrder(*expectedResult.toTypedArray())
+        }
+    }
+
     companion object {
         @JvmStatic
         private fun nullableValuesTestData(): Stream<Arguments> {
@@ -137,6 +158,48 @@ internal class AnagramServiceTest {
                 arguments(text = "", other = "other"),
                 arguments(text = "text", other = ""),
                 arguments(text = "", other = ""),
+            )
+        }
+
+        @JvmStatic
+        private fun anagramHistoryTestData(): Stream<Arguments> {
+            fun arguments(
+                desc: String,
+                givenInputs: List<Pair<String, String>>,
+                givenText: String,
+                expectedResult: List<String>,
+            ) = Arguments.of(
+                desc,
+                givenInputs,
+                givenText,
+                expectedResult,
+            )
+
+            return Stream.of(
+                arguments(
+                    desc = "search for listen in the history",
+                    givenInputs = listOf(Pair("listen", "enlist"), Pair("listen", "restful"), Pair("listen", "silent")),
+                    givenText = "listen",
+                    expectedResult = listOf("enlist", "silent"),
+                ),
+                arguments(
+                    desc = "search for enlist in the history",
+                    givenInputs = listOf(Pair("listen", "enlist"), Pair("listen", "restful"), Pair("listen", "silent")),
+                    givenText = "enlist",
+                    expectedResult = listOf("listen", "silent"),
+                ),
+                arguments(
+                    desc = "search for silent in the history",
+                    givenInputs = listOf(Pair("listen", "enlist"), Pair("listen", "restful"), Pair("listen", "silent")),
+                    givenText = "silent",
+                    expectedResult = listOf("listen", "enlist"),
+                ),
+                arguments(
+                    desc = "search for restful in the history",
+                    givenInputs = listOf(Pair("listen", "enlist"), Pair("listen", "restful"), Pair("listen", "silent")),
+                    givenText = "restful",
+                    expectedResult = emptyList(),
+                ),
             )
         }
     }

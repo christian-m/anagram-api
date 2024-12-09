@@ -34,6 +34,29 @@ The result of the service is a JSON object:
 * `EQUAL` - the given text and candidate are equal
 * `NO_MATCH` - the given text and candidate are different from each other
 
+### Search history
+
+```
+POST http://{{host}}/history
+Content-Type: application/x-www-form-urlencoded
+
+text=a given text
+```
+
+The result of the service is a list of anagrams of the given text that have been entered for comparison in the past.
+
+```
+{
+    "text": "a given text",
+    "anagrams": [
+        "given a text"
+    ]
+}
+```
+
+> Important Note: \
+> The inputs are stored only locally and were not persisted.
+
 ## Motivation
 
 * Using Kotlin, because I learned to love it the past years
