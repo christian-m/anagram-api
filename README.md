@@ -57,6 +57,18 @@ The result of the service is a list of anagrams of the given text that have been
 > Important Note: \
 > The inputs are stored only locally and were not persisted.
 
+## Deployment
+
+The service is deployed on Google Cloud Run for testing purposes.
+
+You can call the [Swagger UI](https://anagram-api.matzat.dev/swagger-ui/index.html) for testing the service.
+
+> Please Note: \
+> Cloud Run containers will be shut down after some idle time. \
+> Please allow some delay if the service wasn't called for some time to ramp up the container again. \
+> The history data isn't persisted between different container runs.
+
+
 ## Motivation
 
 * Using Kotlin, because I learned to love it the past years

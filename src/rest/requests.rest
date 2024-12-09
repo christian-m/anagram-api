@@ -1,0 +1,23 @@
+### GET health state
+GET {{host}}/health
+
+### GET ready state
+GET {{host}}/ready
+
+### GET openapi.json
+GET {{host}}/openapi.json
+
+### POST text and anagram to compare
+POST {{host}}/compare
+Content-Type: application/x-www-form-urlencoded
+
+text=listen&
+candidate=silent
+
+### POST anagram for text from history
+POST {{host}}/history
+Content-Type: application/x-www-form-urlencoded
+
+text=silent
+
+###
