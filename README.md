@@ -59,19 +59,19 @@ The result of the service is a list of anagrams of the given text that have been
 
 ## Deployment
 
-The service is deployed on Google Cloud Run for testing purposes.
+The service is deployed on Google Cloud Run with a Cloud SQL database for testing purposes.
 
 You can call the [Swagger UI](https://anagram-api.matzat.dev/swagger-ui/index.html) for testing the service.
 
 > Please Note: \
-> Cloud Run containers will be shut down after some idle time. \
-> Please allow some delay if the service wasn't called for some time to ramp up the container again. \
-> The history data isn't persisted between different container runs.
-
+> Cloud Run containers may be shut down occasionally. \
+> Please allow some delay if the service wasn't called for some time to ramp up the container again.
 
 ## Motivation
 
 * Using Kotlin, because I learned to love it the past years
 * Using Maven, because I haven't used it a long time and want to see how it behave with Kotlin
 * Using Ktor that I never used before, just out of curiosity (wouldn't do that in a productive project though ;-))
-* Using KoDeIn as dependency injection framework out of curiosity
+* Using KoDeIn as a dependency injection framework out of curiosity
+* Using Exposed as a persistence framework to get more practice with it
+  * The solution might seem overengineered, but I wanted to get practice working with relations

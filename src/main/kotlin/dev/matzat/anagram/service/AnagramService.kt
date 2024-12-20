@@ -1,14 +1,15 @@
 package dev.matzat.anagram.service
 
+import dev.matzat.anagram.persistence.dao.AnagramDao
 import dev.matzat.anagram.service.ComparisonResult.ANAGRAM
 import dev.matzat.anagram.service.ComparisonResult.EQUAL
 import dev.matzat.anagram.service.ComparisonResult.NO_MATCH
 import io.ktor.util.toCharArray
 import java.security.MessageDigest
 
-class AnagramService {
-    private val inputHistory: MutableMap<String, MutableSet<String>> = mutableMapOf()
-
+class AnagramService(
+    private val anagramDao: AnagramDao,
+) {
     fun compare(
         text: String,
         other: String,
@@ -19,13 +20,19 @@ class AnagramService {
             (text.normalize() == other.normalize()) -> ANAGRAM
             else -> NO_MATCH
         }.also {
-            if (text.isNotEmpty()) inputHistory.getOrPut(text.normalize().md5()) { mutableSetOf() }.add(text.trim())
-            if (other.isNotEmpty()) inputHistory.getOrPut(other.normalize().md5()) { mutableSetOf() }.add(other.trim())
+            if (text.isNotEmpty()) {
+                anagramDao.addAnagram(text.normalize().md5(), text)
+            }
+            if (other.isNotEmpty()) {
+                anagramDao.addAnagram(other.normalize().md5(), other)
+            }
         }
 
     fun findInHistory(text: String): List<String> =
-        inputHistory[text.normalize().md5()]
-            ?.filter { it != text }
+        anagramDao
+            .findAnagramHistory(text.normalize().md5())
+            ?.filter { it.anagram != text }
+            ?.map { it.anagram }
             .orEmpty()
 
     private fun String.normalize(): String =

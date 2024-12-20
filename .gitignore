@@ -18,3 +18,6 @@ out/
 ### Terraform ###
 **/src/**/.terraform/
 **/src/**/.terraform.lock.hcl
+
+### Docker local volume data ###
+docker/postgresql

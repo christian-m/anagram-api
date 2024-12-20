@@ -2,5 +2,11 @@ ktor:
   application:
     modules:
       - dev.matzat.anagram.ApplicationKt.module
+  database:
+    host: "$DB_HOST:localhost"
+    port: "$DB_PORT:5432"
+    name: "$DB_NAME:postgres"
+    user: "$DB_USER:postgres"
+    password: "$DB_PASSWORD:postgres"
   deployment:
     port: "$PORT:8080"

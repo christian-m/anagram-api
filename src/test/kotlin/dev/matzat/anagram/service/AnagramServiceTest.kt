@@ -5,6 +5,14 @@ import assertk.assertThat
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import dev.matzat.anagram.DbTestBase
+import dev.matzat.anagram.persistence.dao.AnagramDao
+import dev.matzat.anagram.persistence.domain.AnagramHashes
+import dev.matzat.anagram.persistence.domain.Anagrams
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -13,8 +21,16 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 import java.util.stream.Stream
 
-internal class AnagramServiceTest {
-    private val service = AnagramService()
+internal class AnagramServiceTest : DbTestBase() {
+    private val service = AnagramService(AnagramDao())
+
+    @AfterEach
+    internal fun tearDown() {
+        transaction {
+            Anagrams.deleteAll()
+            AnagramHashes.deleteAll()
+        }
+    }
 
     // Sample data taken from Wikipedia, see https://en.wikipedia.org/wiki/Anagram
     @ParameterizedTest
@@ -134,7 +150,6 @@ internal class AnagramServiceTest {
         givenText: String,
         expectedResult: List<String>,
     ) {
-        val service = AnagramService()
         givenInputs.forEach { service.compare(it.first, it.second) }
 
         assertThat(service.findInHistory(givenText)).all {
@@ -144,6 +159,10 @@ internal class AnagramServiceTest {
     }
 
     companion object {
+        @JvmStatic
+        @BeforeAll
+        fun init() = setupDatabaseConnection()
+
         @JvmStatic
         private fun nullableValuesTestData(): Stream<Arguments> {
             fun arguments(

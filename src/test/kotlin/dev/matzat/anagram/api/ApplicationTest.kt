@@ -8,9 +8,9 @@ import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
+import dev.matzat.anagram.DbTestBase
 import dev.matzat.anagram.api.model.ComparisonResponse
 import dev.matzat.anagram.api.model.HistoryResponse
-import dev.matzat.anagram.module
 import dev.matzat.anagram.service.ComparisonResult
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -25,20 +25,16 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.formUrlEncode
 import io.ktor.serialization.kotlinx.json.json
-import io.ktor.server.testing.testApplication
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.Stream
 
-internal class ApplicationTest {
+internal class ApplicationTest : DbTestBase() {
     @Test
     fun testReadyPath() =
-        testApplication {
-            application {
-                module()
-            }
+        withTestApplication {
             val response = client.get("/ready")
             val responseBody = response.bodyAsText()
             assertAll {
@@ -51,10 +47,7 @@ internal class ApplicationTest {
 
     @Test
     fun testHealthPath() =
-        testApplication {
-            application {
-                module()
-            }
+        withTestApplication {
             val response = client.get("/health")
             val responseBody = response.bodyAsText()
             assertAll {
@@ -67,10 +60,7 @@ internal class ApplicationTest {
 
     @Test
     fun testSwaggerOpenApiPath() =
-        testApplication {
-            application {
-                module()
-            }
+        withTestApplication {
             val response = client.get("/openapi.json")
             assertAll {
                 assertThat(response).all {
@@ -81,10 +71,7 @@ internal class ApplicationTest {
 
     @Test
     fun testSwaggerUiPath() =
-        testApplication {
-            application {
-                module()
-            }
+        withTestApplication {
             val response = client.get("/swagger-ui")
             assertAll {
                 assertThat(response).all {
@@ -100,10 +87,7 @@ internal class ApplicationTest {
         givenText: String,
         givenCandidate: String,
         expectedResult: ComparisonResult,
-    ) = testApplication {
-        application {
-            module()
-        }
+    ) = withTestApplication {
         val client = createClient { install(ContentNegotiation) { json() } }
         val response =
             client.post("/compare") {
@@ -125,10 +109,7 @@ internal class ApplicationTest {
 
     @Test
     fun testHistoryPath() =
-        testApplication {
-            application {
-                module()
-            }
+        withTestApplication {
             val client = createClient { install(ContentNegotiation) { json() } }
             val givenText = "enlist"
             val expectedResult = listOf("silent", "listen")
@@ -162,10 +143,7 @@ internal class ApplicationTest {
 
     @Test
     fun testEmptyHistoryPath() =
-        testApplication {
-            application {
-                module()
-            }
+        withTestApplication {
             val client = createClient { install(ContentNegotiation) { json() } }
             val givenText = "trouble"
             val response =
