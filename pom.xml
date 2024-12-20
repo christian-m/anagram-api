@@ -16,6 +16,7 @@
         <swagger.version>2.2.21</swagger.version>
         <logback_version>1.5.12</logback_version>
         <slf4j.version>2.0.16</slf4j.version>
+        <kodein.version>7.22.0</kodein.version>
         <kotlinLogging.version>7.0.3</kotlinLogging.version>
         <assertk.version>0.28.1</assertk.version>
         <kotlinCoroutinesDebug.version>1.9.0</kotlinCoroutinesDebug.version>
@@ -34,6 +35,15 @@
             </snapshots>
         </repository>
     </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <dependency><!-- has to be on the first position, see https://stackoverflow.com/questions/78462084/ktor-error-neither-port-nor-sslport-specified -->
             <groupId>io.ktor</groupId>
@@ -94,6 +104,16 @@
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-models</artifactId>
             <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kodein.di</groupId>
+            <artifactId>kodein-di-jvm</artifactId>
+            <version>${kodein.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kodein.di</groupId>
+            <artifactId>kodein-di-framework-ktor-server-jvm</artifactId>
+            <version>${kodein.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

@@ -16,17 +16,18 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import io.swagger.v3.oas.models.media.Schema
+import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 
 private val logger = KotlinLogging.logger {}
 
 fun Application.configureRouting() =
     routing {
-        val service = AnagramService()
-        compare(service)
-        history(service)
+        compare()
+        history()
     }
 
-fun Route.compare(service: AnagramService) =
+fun Route.compare() =
     route("/compare") {
         post(
             {
@@ -66,6 +67,7 @@ fun Route.compare(service: AnagramService) =
                 }
             },
         ) {
+            val service by call.closestDI().instance<AnagramService>()
             try {
                 val formParameters = call.receiveParameters()
                 val text = formParameters["text"].orEmpty()
@@ -83,7 +85,7 @@ fun Route.compare(service: AnagramService) =
         }
     }
 
-fun Route.history(service: AnagramService) =
+fun Route.history() =
     route("/history") {
         post(
             {
@@ -120,6 +122,7 @@ fun Route.history(service: AnagramService) =
                 }
             },
         ) {
+            val service by call.closestDI().instance<AnagramService>()
             try {
                 val formParameters = call.receiveParameters()
                 val textToFind = formParameters["text"].orEmpty()
