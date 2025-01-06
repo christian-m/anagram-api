@@ -14,7 +14,7 @@
         <khealth.version>3.0.1</khealth.version>
         <ktorSwagger.version>4.1.0</ktorSwagger.version>
         <swagger.version>2.2.21</swagger.version>
-        <logback_version>1.5.12</logback_version>
+        <logback_version>1.5.16</logback_version>
         <slf4j.version>2.0.16</slf4j.version>
         <kodein.version>7.22.0</kodein.version>
         <kotlinLogging.version>7.0.3</kotlinLogging.version>
