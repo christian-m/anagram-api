@@ -21,7 +21,7 @@
         <hikaricp.version>6.2.1</hikaricp.version>
         <flyway.version>10.21.0</flyway.version>
         <jackson.version>2.18.2</jackson.version>
-        <postgresql.version>42.7.4</postgresql.version>
+        <postgresql.version>42.7.5</postgresql.version>
         <kotlinLogging.version>7.0.3</kotlinLogging.version>
         <assertk.version>0.28.1</assertk.version>
         <kotlinCoroutinesDebug.version>1.10.1</kotlinCoroutinesDebug.version>
