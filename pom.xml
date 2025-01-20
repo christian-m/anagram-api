@@ -19,7 +19,7 @@
         <kodein.version>7.24.1</kodein.version>
         <exposed.version>0.57.0</exposed.version>
         <hikaricp.version>6.2.1</hikaricp.version>
-        <flyway.version>10.21.0</flyway.version>
+        <flyway.version>11.2.0</flyway.version>
         <jackson.version>2.18.2</jackson.version>
         <postgresql.version>42.7.4</postgresql.version>
         <kotlinLogging.version>7.0.3</kotlinLogging.version>
