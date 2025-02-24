@@ -25,7 +25,7 @@
         <kotlinLogging.version>7.0.3</kotlinLogging.version>
         <assertk.version>0.28.1</assertk.version>
         <kotlinCoroutinesDebug.version>1.10.1</kotlinCoroutinesDebug.version>
-        <testcontainers.version>1.20.4</testcontainers.version>
+        <testcontainers.version>1.20.5</testcontainers.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.class>io.ktor.server.netty.EngineMain</main.class>
     </properties>
